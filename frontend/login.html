@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התחברות והרשמה - Recipe Keeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">ראשי</a>
+        <a href="categories.html">קטגוריות</a>
+        <a href="my-recipes.html">המתכונים שלי</a>
+        <a href="upload.html">העלאת מתכון</a>
+        <a href="login.html" style="color: var(--accent-color);">התחברות</a>
+    </nav>
+
+    <main>
+        <div style="max-width: 400px; margin: 40px auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            
+            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">התחברות</h2>
+            <form id="login-form">
+                <input type="text" id="login-username" placeholder="שם משתמש" required>
+                <input type="password" id="login-password" placeholder="סיסמה" required>
+                <button type="submit" style="margin-top: 10px;">התחבר</button>
+            </form>
+
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+
+            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">אין לך חשבון? הרשם</h2>
+            <form id="register-form">
+                <input type="text" id="register-username" placeholder="שם משתמש חדש" required>
+                <input type="password" id="register-password" placeholder="סיסמה חדשה" required>
+                <button type="submit" style="background: var(--primary-color); margin-top: 10px;">צור חשבון</button>
+            </form>
+            
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

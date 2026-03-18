@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עריכת מתכון - Recipe Keeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">ראשי</a>
+        <a href="categories.html">קטגוריות</a>
+        <a href="my-recipes.html">המתכונים שלי</a>
+        <a href="upload.html">העלאת מתכון</a>
+    </nav>
+
+    <main id="edit-recipe-page" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 800px; margin: 20px auto;">
+        <h2 style="color: var(--primary-color);">עריכת מתכון</h2>
+        
+        <input type="text" id="edit-recipe-title" placeholder="שם המתכון (למשל: עוגת שוקולד)" required>
+        <input type="text" id="edit-recipe-category" placeholder="קטגוריה (למשל: קינוחים)" required>
+        
+        <div style="margin-top: 20px;">
+            <h3>מצרכים:</h3>
+            <div id="edit-ingredients-container"></div>
+            <button type="button" id="edit-add-ingredient-btn" style="background: #2c3e50; margin-bottom: 20px; width: auto; padding: 10px 15px;">+ הוסף מצרך</button>
+        </div>
+
+        <div>
+            <h3>הוראות הכנה:</h3>
+            <div id="edit-instructions-container"></div>
+            <button type="button" id="edit-add-instruction-btn" style="background: #2c3e50; margin-bottom: 20px; width: auto; padding: 10px 15px;">+ הוסף שלב</button>
+        </div>
+
+        <button id="update-recipe-btn" style="background: #27ae60; margin-top: 20px; font-size: 1.1rem; padding: 15px;">שמור שינויים</button>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

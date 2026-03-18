@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המתכונים שלי - Recipe Keeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav></nav>
+
+    <main>
+        <h1 style="color: var(--primary-color);">המתכונים שלי</h1>
+        
+        <div id="my-category-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+            <p>טוען קטגוריות...</p>
+        </div>
+
+        <h2 id="my-selected-category-title" style="margin-top: 30px; border-bottom: 2px solid var(--accent-color); display: inline-block;">הכל</h2>
+        
+        <div id="my-recipes-list" class="recipe-grid" style="margin-top: 20px;">
+            <p>טוען מתכונים ששמרת...</p>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

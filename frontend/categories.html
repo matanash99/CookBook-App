@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קטגוריות - Recipe Keeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">ראשי</a>
+        <a href="categories.html">קטגוריות</a>
+        <a href="my-recipes.html">המתכונים שלי</a>
+        <a href="upload.html">העלאת מתכון</a>
+    </nav>
+
+    <main>
+        <h1>קטגוריות מתכונים</h1>
+        
+        <div id="category-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px;">
+            <p>טוען קטגוריות...</p>
+        </div>
+
+        <section>
+            <h2 id="selected-category-title">כל המתכונים</h2>
+            <div id="filtered-recipes-list" class="recipe-grid"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>העלאת מתכון - Recipe Keeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">ראשי</a>
+        <a href="categories.html">קטגוריות</a>
+        <a href="my-recipes.html">המתכונים שלי</a>
+        <a href="upload.html">העלאת מתכון</a>
+    </nav>
+
+    <main>
+        <section id="upload-section" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h1 style="color: var(--primary-color);">סריקת מתכון חדש</h1>
+            <p>העלה תמונה של מתכון (בכתב יד או מודפס) והבינה המלאכותית שלנו תמיר אותו לטקסט דיגיטלי.</p>
+            
+            <input type="file" id="recipe-image" accept="image/*" style="margin-bottom: 20px;">
+            <button id="scan-btn">סרוק תמונה</button>
+            
+            <div id="loading-msg" style="display: none; margin-top: 15px; color: var(--accent-color); font-weight: bold;">
+                סורק מתכון... אנא המתן...
+            </div>
+        </section>
+
+        <section id="review-section" style="display: none; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 20px;">
+            <h2 style="color: var(--primary-color);">בדוק ותקן</h2>
+            <p>וודא שהפרטים נסרקו כראוי, הוסף שם וקטגוריה, ושמור את המתכון.</p>
+            
+            <input type="text" id="recipe-title" placeholder="שם המתכון (למשל: עוגת שוקולד)" required>
+            <input type="text" id="recipe-category" placeholder="קטגוריה (למשל: קינוחים)" required>
+            
+            <div style="margin-top: 20px;">
+                <h3>מצרכים:</h3>
+                <div id="ingredients-container"></div>
+                <button type="button" id="add-ingredient-btn" style="background: #2c3e50; margin-bottom: 20px; width: auto; padding: 10px 15px;">+ הוסף מצרך</button>
+            </div>
+
+            <div>
+                <h3>הוראות הכנה:</h3>
+                <div id="instructions-container"></div>
+                <button type="button" id="add-instruction-btn" style="background: #2c3e50; margin-bottom: 20px; width: auto; padding: 10px 15px;">+ הוסף שלב</button>
+            </div>
+
+            <button id="save-recipe-btn" style="background: #27ae60; margin-top: 20px; font-size: 1.1rem; padding: 15px;">שמור מתכון</button>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
