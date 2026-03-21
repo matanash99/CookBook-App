@@ -3,19 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>קטגוריות - Recipe Keeper</title>
+    <title>קטגוריות</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-    <nav>
-        <a href="index.html">ראשי</a>
-        <a href="categories.html">קטגוריות</a>
-        <a href="my-recipes.html">המתכונים שלי</a>
-        <a href="upload.html">העלאת מתכון</a>
+    <!-- ===============================
+         TOP NAV (Desktop + Mobile Logout)
+         =============================== -->
+    <nav class="top-nav">
+        <!-- Desktop links (hidden on mobile) -->
+        <div class="desktop-links">
+            <a href="index.html">ראשי</a>
+            <a href="categories.html">קטגוריות</a>
+            <a href="upload.html">העלאה</a>
+            <a href="my-recipes.html">המתכונים שלי</a>
+        </div>
+
+        <!-- User controls (visible always, but only logout matters on mobile) -->
+        <div class="user-controls">
+            <span class="user-greeting">שלום משתמש</span>
+            <a href="#" class="logout-btn">התנתק</a>
+        </div>
     </nav>
+
 
     <main>
         <h1>קטגוריות מתכונים</h1>
+        <div class="search-container" style="margin: 20px 0; text-align: center;">
+            <input type="text" id="recipe-search" placeholder="חיפוש לפי שם או קטגוריה..." 
+                style="width: 100%; max-width: 400px; padding: 12px; font-size: 16px; border: 2px solid var(--accent-color, #ccc); border-radius: 8px; outline: none;">
+        </div>
         
         <div id="category-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px;">
             <p>טוען קטגוריות...</p>
@@ -26,7 +46,41 @@
             <div id="filtered-recipes-list" class="recipe-grid"></div>
         </section>
     </main>
+    
+    <!-- ===============================
+         MOBILE BOTTOM NAV (Only Mobile)
+         =============================== -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="icon">🏠</span>
+            <span>ראשי</span>
+        </a>
+
+        <a href="categories.html" class="nav-item">
+            <span class="icon">📁</span>
+            <span>קטגוריות</span>
+        </a>
+
+        <a href="upload.html" class="nav-item">
+            <span class="icon">➕</span>
+            <span>העלאה</span>
+        </a>
+
+        <a href="my-recipes.html" class="nav-item">
+            <span class="icon">👤</span>
+            <span>שלי</span>
+        </a>
+    </nav>
 
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered!'))
+                    .catch(err => console.log('Service Worker failed', err));
+            });
+        }
+    </script>
 </body>
 </html>

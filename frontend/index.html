@@ -3,28 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Keeper - ראשי</title>
+    <title>ראשי</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" type="image/png" href="favicon.png">
 </head>
+
 <body>
-    <nav>
-        <a href="index.html">ראשי</a>
-        <a href="categories.html">קטגוריות</a>
-        <a href="my-recipes.html">המתכונים שלי</a>
-        <a href="upload.html">העלאת מתכון</a>
+
+    <!-- ===============================
+         TOP NAV (Desktop + Mobile Logout)
+         =============================== -->
+    <nav class="top-nav">
+        <!-- Desktop links (hidden on mobile) -->
+        <div class="desktop-links">
+            <a href="index.html">ראשי</a>
+            <a href="categories.html">קטגוריות</a>
+            <a href="upload.html">העלאה</a>
+            <a href="my-recipes.html">המתכונים שלי</a>
+        </div>
+
+        <!-- User controls (visible always, but only logout matters on mobile) -->
+        <div class="user-controls">
+            <span class="user-greeting">שלום משתמש</span>
+            <a href="#" class="logout-btn">התנתק</a>
+        </div>
     </nav>
 
+    <!-- ===============================
+         MAIN CONTENT
+         =============================== -->
     <main>
+
         <h1>מתכונים</h1>
-        
-        <section>
-            <h2>מתכונים חדשים</h2>
-            <div id="new-recipes-list">
+
+        <!-- TOP 10 SECTION -->
+        <section id="top-10-section" style="display: none; margin-bottom: 40px;">
+            <div style="margin-bottom: 15px;">
+                <h2 style="margin: 0;">
+                    <a href="top10.html" style="color: var(--primary-color); text-decoration: none;">
+                        Top 10 🔥
+                    </a>
+                </h2>
+            </div>
+
+            <div id="top-recipes-list" class="horizontal-scroll-container">
+                <p>טוען מובילים...</p>
+            </div>
+        </section>
+
+        <!-- RECENT -->
+        <section id="recent-section">
+            <div style="margin-bottom: 15px;">
+                <h2 style="margin: 0;">
+                    <a href="recent.html" style="color: inherit; text-decoration: none;">
+                        מתכונים חדשים
+                    </a>
+                </h2>
+            </div>
+
+            <div id="new-recipes-list" class="recipe-grid">
                 <p>טוען מתכונים...</p>
             </div>
         </section>
+
     </main>
 
+    <!-- ===============================
+         MOBILE BOTTOM NAV (Only Mobile)
+         =============================== -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="icon">🏠</span>
+            <span>ראשי</span>
+        </a>
+
+        <a href="categories.html" class="nav-item">
+            <span class="icon">📁</span>
+            <span>קטגוריות</span>
+        </a>
+
+        <a href="upload.html" class="nav-item">
+            <span class="icon">➕</span>
+            <span>העלאה</span>
+        </a>
+
+        <a href="my-recipes.html" class="nav-item">
+            <span class="icon">👤</span>
+            <span>שלי</span>
+        </a>
+    </nav>
+
+    <!-- ===============================
+         JS
+         =============================== -->
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered!'))
+                    .catch(err => console.log('Service Worker failed', err));
+            });
+        }
+    </script>
+
 </body>
 </html>

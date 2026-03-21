@@ -1,4 +1,6 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Boolean, Table
+from datetime import datetime
+
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Boolean, Table, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./recipes.db"
@@ -41,6 +43,8 @@ class Recipe(Base):
     ingredients = relationship("Ingredient", back_populates="recipe", cascade="all, delete-orphan")
     instructions = relationship("Instruction", back_populates="recipe", cascade="all, delete-orphan")
     saved_by = relationship("User", secondary=saved_recipes_table, back_populates="saved_recipes")
+    views = Column(Integer, default=0) 
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class Ingredient(Base):
     __tablename__ = "ingredients"
