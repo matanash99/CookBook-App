@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List, Optional
 import jwt
+import os
+from fastapi.staticfiles import StaticFiles
 
 from database import Base, engine, SessionLocal, Recipe, Ingredient, Instruction, User
 from ocr_service import process_recipe_image
@@ -17,9 +19,10 @@ app = FastAPI(title="Recipe Keeper API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,
+    allow_methods=["*"], 
     allow_headers=["*"],
+    expose_headers=["*"], # Forces the phone to see all server responses
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
@@ -71,8 +74,6 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already registered")
     
     hashed_password = auth.get_password_hash(user.password)
-    
-    # Automatically grant admin rights to this specific username
     user_is_admin = user.username.lower() == "matan"
     
     new_user = User(username=user.username, hashed_password=hashed_password, is_admin=user_is_admin)
@@ -87,8 +88,6 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     
     access_token = auth.create_access_token(data={"sub": db_user.username})
-    
-    # Return the token, plus the user's ID and admin status for the frontend
     return {
         "access_token": access_token, 
         "token_type": "bearer",
@@ -97,13 +96,23 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
     }
 
 @app.post("/api/upload-scan")
-async def upload_and_scan(file: UploadFile = File(...)):
+def upload_and_scan(file: UploadFile = File(...)):
     try:
-        image_bytes = await file.read()
+        image_bytes = file.file.read()
         scanned_data = process_recipe_image(image_bytes)
         return scanned_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to process image")
+        error_msg = str(e)
+        print(f"CRITICAL SCAN ERROR: {error_msg}")
+        
+        # Check if the error is about limits or quota
+        if "429" in error_msg or "quota" in error_msg.lower():
+            raise HTTPException(
+                status_code=429, 
+                detail="הגעת למכסה היומית של סריקות (20). נסה שוב מחר או החלף מפתח API."
+            )
+        
+        raise HTTPException(status_code=500, detail="שגיאה פנימית בסריקה")
 
 @app.post("/api/recipes")
 def create_recipe(recipe: RecipeCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -132,6 +141,18 @@ def create_recipe(recipe: RecipeCreate, db: Session = Depends(get_db), current_u
 def get_recipes(db: Session = Depends(get_db)):
     return db.query(Recipe).all()
 
+# 1. Get Top 10 Recipes (Sorted by views)
+@app.get("/api/recipes/top10")
+def get_top_10_recipes(db: Session = Depends(get_db)):
+    return db.query(Recipe).order_by(desc(Recipe.views)).limit(10).all()
+
+# 2. Get Recent Recipes (Sorted by newest first)
+@app.get("/api/recipes/recent")
+def get_recent_recipes(limit: int = 10, db: Session = Depends(get_db)):
+    # You can pass limit=100 later for the dedicated page!
+    return db.query(Recipe).order_by(desc(Recipe.created_at)).limit(limit).all()
+
+
 @app.get("/api/recipes/{recipe_id}")
 def get_recipe(recipe_id: int, db: Session = Depends(get_db)):
     recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
@@ -143,10 +164,10 @@ def get_recipe(recipe_id: int, db: Session = Depends(get_db)):
         "title": recipe.title,
         "category": recipe.category,
         "owner_id": recipe.owner_id,
+        "image_url": recipe.image_url,
         "ingredients": [{"item": i.item, "amount": i.amount} for i in recipe.ingredients],
         "instructions": [inst.instruction_text for inst in recipe.instructions]
     }
-
 
 @app.put("/api/recipes/{recipe_id}")
 def edit_recipe(recipe_id: int, recipe_update: RecipeCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -154,15 +175,17 @@ def edit_recipe(recipe_id: int, recipe_update: RecipeCreate, db: Session = Depen
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
     
-    # THE SECURITY GATE: Must be owner OR admin
     if recipe.owner_id != current_user.id and not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Not authorized to edit this recipe")
     
-    # Update main details
     recipe.title = recipe_update.title
     recipe.category = recipe_update.category
     
-    # The cleanest way to update lists in SQLAlchemy is to wipe the old ones and add the new ones
+    if recipe_update.image_url is not None:
+        recipe.image_url = recipe_update.image_url
+
+    
+    
     db.query(Ingredient).filter(Ingredient.recipe_id == recipe_id).delete()
     db.query(Instruction).filter(Instruction.recipe_id == recipe_id).delete()
     
@@ -187,7 +210,6 @@ def delete_recipe(recipe_id: int, db: Session = Depends(get_db), current_user: U
     db.delete(recipe)
     db.commit()
     return {"message": "Recipe deleted successfully"}
-
 
 @app.post("/api/recipes/{recipe_id}/save")
 def save_recipe(recipe_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -224,3 +246,29 @@ def get_saved_recipes(db: Session = Depends(get_db), current_user: User = Depend
         }
         for recipe in current_user.saved_recipes
     ]
+
+
+from sqlalchemy import desc
+
+# Increment View Count
+@app.post("/api/recipes/{recipe_id}/view")
+def increment_recipe_view(recipe_id: int, db: Session = Depends(get_db)):
+    recipe = db.query(Recipe).filter(Recipe.id == recipe_id).first()
+    if recipe:
+        # If it doesn't have views yet, set to 0 then add 1
+        if recipe.views is None:
+            recipe.views = 0
+        recipe.views += 1
+        db.commit()
+        return {"message": "View counted!", "new_views": recipe.views}
+    raise HTTPException(status_code=404, detail="Recipe not found")
+
+# --- SERVE FRONTEND ---
+# 1. Get the directory where main.py lives (the backend folder)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 2. Go up one level to "cookbook", then into the "frontend" folder
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+
+# 3. Mount the frontend folder to the root URL "/"
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

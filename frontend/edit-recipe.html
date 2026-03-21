@@ -3,16 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>עריכת מתכון - Recipe Keeper</title>
+    <title>עריכת מתכון</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-    <nav>
-        <a href="index.html">ראשי</a>
-        <a href="categories.html">קטגוריות</a>
-        <a href="my-recipes.html">המתכונים שלי</a>
-        <a href="upload.html">העלאת מתכון</a>
+    <!-- ===============================
+         TOP NAV (Desktop + Mobile Logout)
+         =============================== -->
+    <nav class="top-nav">
+        <!-- Desktop links (hidden on mobile) -->
+        <div class="desktop-links">
+            <a href="index.html">ראשי</a>
+            <a href="categories.html">קטגוריות</a>
+            <a href="upload.html">העלאה</a>
+            <a href="my-recipes.html">המתכונים שלי</a>
+        </div>
+
+        <!-- User controls (visible always, but only logout matters on mobile) -->
+        <div class="user-controls">
+            <span class="user-greeting">שלום משתמש</span>
+            <a href="#" class="logout-btn">התנתק</a>
+        </div>
     </nav>
+
 
     <main id="edit-recipe-page" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 800px; margin: 20px auto;">
         <h2 style="color: var(--primary-color);">עריכת מתכון</h2>
@@ -32,9 +48,50 @@
             <button type="button" id="edit-add-instruction-btn" style="background: #2c3e50; margin-bottom: 20px; width: auto; padding: 10px 15px;">+ הוסף שלב</button>
         </div>
 
+        <div style="margin-top: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border: 2px dashed #bdc3c7; border-radius: 8px; text-align: center;">
+            <label for="edit-dish-image-upload" style="font-weight: bold; display: block; margin-bottom: 10px; cursor: pointer;">
+                📷 הוסף או עדכן תמונה של המנה
+            </label>
+            <input type="file" id="edit-dish-image-upload" accept="image/*" style="width: 100%; max-width: 300px;">
+            <p style="font-size: 0.8rem; color: gray; margin-top: 5px;">אם לא תבחר תמונה חדשה, התמונה הקיימת תישמר.</p>
+        </div>
+
         <button id="update-recipe-btn" style="background: #27ae60; margin-top: 20px; font-size: 1.1rem; padding: 15px;">שמור שינויים</button>
     </main>
+    <!-- ===============================
+         MOBILE BOTTOM NAV (Only Mobile)
+         =============================== -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="icon">🏠</span>
+            <span>ראשי</span>
+        </a>
+
+        <a href="categories.html" class="nav-item">
+            <span class="icon">📁</span>
+            <span>קטגוריות</span>
+        </a>
+
+        <a href="upload.html" class="nav-item">
+            <span class="icon">➕</span>
+            <span>העלאה</span>
+        </a>
+
+        <a href="my-recipes.html" class="nav-item">
+            <span class="icon">👤</span>
+            <span>שלי</span>
+        </a>
+    </nav>
 
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered!'))
+                    .catch(err => console.log('Service Worker failed', err));
+            });
+        }
+    </script>
 </body>
 </html>
