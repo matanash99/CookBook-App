@@ -57,6 +57,7 @@ main {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     transition: transform 0.2s;
     border-top: 5px solid var(--accent-color);
+    position: relative;
 }
 
 .recipe-card:hover {
@@ -131,4 +132,161 @@ li {
 
 .remove-btn:hover {
     background: #c0392b;
+}
+
+
+/* =========================================
+   NETFLIX STYLE HORIZONTAL SCROLL
+   ========================================= */
+.horizontal-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 15px; 
+}
+
+/* Force horizontal cards to be a specific width so they don't stretch */
+.horizontal-scroll-container .recipe-card {
+    min-width: 220px;
+    max-width: 220px;
+    position: relative; 
+}
+
+/* =========================================
+   CUSTOM MINIMALIST SCROLLBAR (No Arrows)
+   ========================================= */
+.horizontal-scroll-container::-webkit-scrollbar {
+    height: 6px; 
+}
+
+.horizontal-scroll-container::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+.horizontal-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--accent-color, #e67e22); 
+    border-radius: 10px;
+}
+
+/* Aggressively target and destroy the arrows in Chrome/Edge */
+.horizontal-scroll-container::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* The Golden Ranking Badge */
+.ranking-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #FFD700; /* Gold */
+    color: #000;
+    font-weight: bold;
+    font-size: 1.2rem;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+/* =========================================
+   TOP NAV (Desktop)
+   ========================================= */
+.top-nav {
+    background: #2c3e50;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between; /* Links Right, Logout Left */
+    align-items: center;
+}
+
+.desktop-links {
+    display: flex;
+    gap: 20px;
+}
+
+.desktop-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.user-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.user-greeting { color: #f1c40f; font-weight: bold; }
+.logout-btn { color: #e74c3c !important; text-decoration: none; font-weight: bold; }
+
+.mobile-bottom-nav {
+    display: none; /* Hidden by default, shown on mobile */
+    background-color: #2c3e50;
+    padding: 10px 0;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    z-index: 9999;
+}
+
+/* =========================================
+   MOBILE (Under 768px)
+   ========================================= */
+@media (max-width: 768px) {
+    /* 1. Hide the links that the JS just created */
+    .desktop-links {
+        display: none !important;
+    }
+
+    /* 2. Move the remaining Logout box to the LEFT */
+    .top-nav {
+        justify-content: flex-end !important; /* In RTL, this pushes to the left edge */
+    }
+
+    /* 3. Reveal the Bottom Bar */
+    .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0; left: 0; width: 100%;
+        background-color: #2c3e50;
+        justify-content: space-around;
+        padding: 10px 0;
+        z-index: 9999;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;   /* 🔥 stack vertically */
+    align-items: center;      /* center horizontally */
+    justify-content: center;  /* center vertically */
+    text-align: center;
+
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    gap: 3px; /* space between emoji and text */
+}
+
+.icon {
+    font-size: 20px;
+    line-height: 1; /* removes weird spacing */
+}
+
+#manual-entry-btn {
+    background: #95a5a6; 
+    margin-top: 15px; 
+    width: 100%;
+}
+
+#manual-entry-btn:hover {
+    background: #7f8c8d;
 }
