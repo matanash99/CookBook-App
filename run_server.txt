@@ -1,0 +1,8 @@
+cd backend
+
+In backend-
+source venv/Scripts/activate
+- expected: to see (venv) in terminal
+
+uvicorn main:app --reload --host 0.0.0.0
+- expected: http://localhost:8000/login.html

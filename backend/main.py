@@ -263,6 +263,8 @@ def increment_recipe_view(recipe_id: int, db: Session = Depends(get_db)):
         return {"message": "View counted!", "new_views": recipe.views}
     raise HTTPException(status_code=404, detail="Recipe not found")
 
+from fastapi.responses import RedirectResponse
+
 # --- SERVE FRONTEND ---
 # 1. Get the directory where main.py lives (the backend folder)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -270,5 +272,16 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # 2. Go up one level to "cookbook", then into the "frontend" folder
 FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
 
-# 3. Mount the frontend folder to the root URL "/"
+# 3. Redirect root to the moved views entrypoint
+@app.get("/")
+def root_redirect():
+    return RedirectResponse(url='/views/index.html')
+
+# 4. Serve root-level frontend static files under /static
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+
+# 5. Serve the moved view files under /views explicitly
+app.mount("/views", StaticFiles(directory=os.path.join(FRONTEND_DIR, "views"), html=True), name="views")
+
+# 6. Serve static assets folder at /assets
+app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIR, "assets")), name="assets")
