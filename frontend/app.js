@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLoginPage = path.includes('login.html');
 
     if (!token && !isLoginPage) {
-        window.location.href = 'login.html';
+        window.location.href = '/views/login.html';
         return; 
     }
 
@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Just update the text, don't destroy the layout!
     if (token) {
-        const adminBadge = isAdmin ? ' ⭐' : '';
+        const adminBadge = isAdmin ? ' <span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle; color: #f1c40f;">star</span>' : '';
         if (greetingElement) {
-            greetingElement.innerText = `שלום, ${username}${adminBadge}`;
+            greetingElement.innerHTML = `שלום, ${username}${adminBadge}`;
         }
         
         if (logoutBtn) {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 localStorage.clear();
-                window.location.href = 'login.html';
+                window.location.href = '/views/login.html';
             });
         }
     } else {
@@ -49,11 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (greetingElement) greetingElement.style.display = 'none';
         if (logoutBtn) {
             logoutBtn.innerText = 'התחברות';
-            logoutBtn.href = 'login.html';
+            logoutBtn.href = '/views/login.html';
         }
     }
 
-    if (path.includes('index.html') || path === '/' || path.endsWith('/')) loadHomeRecipes();
+    // Apply icon replacements and remove decorative emojis from text
+
+    if (path.includes('index.html') || path.includes('/views/index.html') || path === '/' || path.endsWith('/')) loadHomeRecipes();
     if (document.getElementById('recipe-detail')) loadSingleRecipe();
     if (document.getElementById('category-buttons')) loadCategoriesPage();
     if (document.getElementById('edit-recipe-page')) loadEditRecipePage();
@@ -106,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('is_admin', data.is_admin);
                     localStorage.setItem('user_id', data.user_id);
                     localStorage.setItem('username', usernameInput);
-                    window.location.href = 'index.html';
+                    window.location.href = '/views/index.html';
                 } else {
                     alert('שם משתמש או סיסמה שגויים.');
                 }
@@ -117,6 +119,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ==========================================
+// UPLOAD FILE NAME DISPLAY LOGIC
+// ==========================================
+const fileNameDisplay = document.getElementById('file-name-display');
+
+if (fileInput && fileNameDisplay) {
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            fileNameDisplay.innerText = `✅ התמונה נבחרה: ${fileName}`;
+            fileNameDisplay.style.color = '#27ae60'; 
+        }
+    });
+}
 
 if (scanBtn) {
     scanBtn.addEventListener('click', async () => {
@@ -296,7 +313,7 @@ if (saveBtn) {
                 });
                 
                 if (response.ok) {
-                    window.location.href = 'index.html';
+                    window.location.href = '/views/index.html';
                 } else {
                     alert('שגיאה בשמירת המתכון.');
                     saveBtn.innerText = 'שמור מתכון';
@@ -328,12 +345,13 @@ async function loadHomeRecipes() {
     const topList = document.getElementById('top-recipes-list');
     const topSection = document.getElementById('top-10-section');
     
-    if (!listContainer) return; // Exit if we are not on the homepage
+    // Grab the current user's ID to check ownership
+    const currentUserId = parseInt(localStorage.getItem('user_id'));
+    
+    if (!listContainer) return; 
     
     try {
-        // Check if we are on the new homepage layout with the Top 10 section
         if (topList && topSection) {
-            // Fetch both lists from the backend at the exact same time
             const [topRes, recentRes] = await Promise.all([
                 fetch(`${API_BASE}/recipes/top10`),
                 fetch(`${API_BASE}/recipes/recent`)
@@ -345,16 +363,22 @@ async function loadHomeRecipes() {
             // 1. Render the Top 10 List (Horizontal)
             topList.innerHTML = '';
             if (topRecipes.length > 0) {
-                topSection.style.display = 'block'; // Unhide the Top 10 section
+                topSection.style.display = 'block'; 
                 topRecipes.forEach((recipe, index) => {
+                    // Check if it's my recipe and build the badge HTML
+                    const isMine = recipe.owner_id === currentUserId;
+                    const myBadgeHTML = isMine ? `<div class="my-recipe-badge"><span class="material-symbols-outlined" style="font-size: 14px;">person</span>שלי</div>` : '';
+
                     const card = document.createElement('div');
                     card.className = 'recipe-card';
-                    // Add the Golden Ranking Badge to each card based on its index
+                    card.onclick = () => goToRecipe(recipe.id); 
+                    card.style.cursor = 'pointer'; // Shows the pointer finger on desktop
                     card.innerHTML = `
-                        <div class="ranking-badge">#${index + 1}</div>
-                        <h3>${recipe.title}</h3>
-                        <p>קטגוריה: ${recipe.category}</p>
-                        <button onclick="goToRecipe(${recipe.id})">צפה במתכון המלא</button>
+                        ${myBadgeHTML}
+                        <div style="padding-right: 5px;">
+                            <h3 style="margin: 0 0 6px 0; font-size: 1.2rem;">${recipe.title}</h3>
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">קטגוריה: ${recipe.category}</p>
+                        </div>
                     `;
                     topList.appendChild(card);
                 });
@@ -364,23 +388,46 @@ async function loadHomeRecipes() {
             listContainer.innerHTML = '';
             if (recentRecipes.length > 0) {
                 recentRecipes.forEach(recipe => {
+                    // Check if it's my recipe and build the badge HTML
+                    const isMine = recipe.owner_id === currentUserId;
+                    const myBadgeHTML = isMine ? `<div class="my-recipe-badge"><span class="material-symbols-outlined" style="font-size: 14px;">person</span>שלי</div>` : '';
+
                     const card = document.createElement('div');
                     card.className = 'recipe-card';
-                    card.innerHTML = `<h3>${recipe.title}</h3><p>קטגוריה: ${recipe.category}</p><button onclick="goToRecipe(${recipe.id})">צפה במתכון המלא</button>`;
+                    card.onclick = () => goToRecipe(recipe.id); 
+                    card.style.cursor = 'pointer'; // Shows the pointer finger on desktop
+                    card.innerHTML = `
+                        ${myBadgeHTML}
+                        <div style="padding-right: 5px;">
+                            <h3 style="margin: 0 0 6px 0; font-size: 1.2rem;">${recipe.title}</h3>
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">קטגוריה: ${recipe.category}</p>
+                        </div>
+                    `;
                     listContainer.appendChild(card);
                 });
             } else {
                 listContainer.innerHTML = '<p>אין עדיין מתכונים. הוסף מתכון ראשון!</p>';
             }
         } else {
-            // Fallback just in case the HTML hasn't been updated yet
+            // Fallback
             const response = await fetch(`${API_BASE}/recipes`);
             const recipes = await response.json();
             listContainer.innerHTML = '';
             recipes.forEach(recipe => {
+                const isMine = recipe.owner_id === currentUserId;
+                const myBadgeHTML = isMine ? `<div class="my-recipe-badge"><span class="material-symbols-outlined" style="font-size: 14px;">person</span>שלי</div>` : '';
+
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
-                card.innerHTML = `<h3>${recipe.title}</h3><p>קטגוריה: ${recipe.category}</p><button onclick="goToRecipe(${recipe.id})">צפה במתכון המלא</button>`;
+                card.onclick = () => goToRecipe(recipe.id); 
+                card.style.cursor = 'pointer'; // Shows the pointer finger on desktop
+                card.innerHTML = `
+                    ${myBadgeHTML}
+                    <div style="padding-right: 5px;">
+                        <h3 style="margin: 0 0 6px 0; font-size: 1.2rem;">${recipe.title}</h3>
+                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">קטגוריה: ${recipe.category}</p>
+                    </div>
+                `;
                 listContainer.appendChild(card);
             });
         }
@@ -389,7 +436,7 @@ async function loadHomeRecipes() {
     }
 }
 
-function goToRecipe(id) { window.location.href = `view-recipe.html?id=${id}`; }
+function goToRecipe(id) { window.location.href = `/views/view-recipe.html?id=${id}`; }
 
 async function loadSingleRecipe() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -445,7 +492,7 @@ async function loadSingleRecipe() {
             const editBtn = document.createElement('button');
             editBtn.innerText = 'ערוך מתכון';
             editBtn.style.cssText = "background: #f1c40f; color: black; width: auto; margin-right: 10px;";
-            editBtn.onclick = () => window.location.href = `edit-recipe.html?id=${recipeId}`;
+            editBtn.onclick = () => window.location.href = `/views/edit-recipe.html?id=${recipeId}`;
             actionButtons.appendChild(editBtn);
             const delBtn = document.createElement('button');
             delBtn.innerText = 'מחק מתכון';
@@ -453,7 +500,7 @@ async function loadSingleRecipe() {
             delBtn.onclick = async () => {
                 if (confirm('מחק לצמיתות?')) {
                     const res = await fetch(`${API_BASE}/recipes/${recipeId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-                    if (res.ok) window.location.href = 'index.html';
+                    if (res.ok) window.location.href = '/views/index.html';
                 }
             };
             actionButtons.appendChild(delBtn);
@@ -468,7 +515,7 @@ async function loadMyRecipesPage() {
     const token = localStorage.getItem('token');
     try {
         const response = await fetch(`${API_BASE}/users/me/saved-recipes`, { headers: { 'Authorization': `Bearer ${token}` } });
-        if (!response.ok) { if (response.status === 401) { localStorage.clear(); window.location.href = 'login.html'; } return; }
+        if (!response.ok) { if (response.status === 401) { localStorage.clear(); window.location.href = '/views/login.html'; } return; }
         const savedRecipes = await response.json();
         if (savedRecipes.length === 0) { buttonsContainer.innerHTML = ''; listContainer.innerHTML = '<p>אין מתכונים שמורים.</p>'; return; }
         const uniqueCategories = [...new Set(savedRecipes.map(r => r.category))];
@@ -515,12 +562,28 @@ async function loadCategoriesPage() {
 }
 
 function renderFilteredRecipes(recipesToDisplay, categoryName, container, titleElement) {
-    titleElement.innerText = categoryName;
+    // Grab the current user's ID to check ownership
+    const currentUserId = parseInt(localStorage.getItem('user_id'));
+
+    if (titleElement) titleElement.innerText = categoryName;
     container.innerHTML = recipesToDisplay.length === 0 ? '<p>אין מתכונים.</p>' : '';
+    
     recipesToDisplay.forEach(recipe => {
+        // Check if it's my recipe and build the badge HTML
+        const isMine = recipe.owner_id === currentUserId;
+        const myBadgeHTML = isMine ? `<div class="my-recipe-badge"><span class="material-symbols-outlined" style="font-size: 14px;">person</span>שלי</div>` : '';
+
         const card = document.createElement('div');
         card.className = 'recipe-card';
-        card.innerHTML = `<h3>${recipe.title}</h3><p>קטגוריה: ${recipe.category}</p><button onclick="goToRecipe(${recipe.id})">צפה במתכון המלא</button>`;
+        card.onclick = () => goToRecipe(recipe.id); 
+        card.style.cursor = 'pointer'; // Shows the pointer finger on desktop
+        card.innerHTML = `
+            ${myBadgeHTML}
+            <div style="padding-right: 5px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 1.2rem;">${recipe.title}</h3>
+                <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">קטגוריה: ${recipe.category}</p>
+            </div>
+        `;
         container.appendChild(card);
     });
 }
@@ -529,7 +592,7 @@ async function loadEditRecipePage() {
     const urlParams = new URLSearchParams(window.location.search);
     const recipeId = urlParams.get('id');
     const token = localStorage.getItem('token');
-    if (!recipeId) return window.location.href = 'index.html';
+    if (!recipeId) return window.location.href = '/views/index.html';
     const ingContainer = document.getElementById('edit-ingredients-container');
     const instContainer = document.getElementById('edit-instructions-container');
     try {
@@ -595,7 +658,7 @@ async function loadEditRecipePage() {
                 });
                 
                 if (res.ok) {
-                    window.location.href = `view-recipe.html?id=${recipeId}`;
+                    window.location.href = `/views/view-recipe.html?id=${recipeId}`;
                 } else {
                     alert('שגיאה בעדכון המתכון.');
                     updateBtn.innerText = 'עדכן מתכון';
@@ -652,6 +715,8 @@ if (searchInput) {
 // Function for the dedicated Top 10 Page
 async function loadTop10Page() {
     const container = document.getElementById('top-10-page-list');
+    const currentUserId = parseInt(localStorage.getItem('user_id')); 
+    
     try {
         const response = await fetch(`${API_BASE}/recipes/top10`);
         const recipes = await response.json();
@@ -660,15 +725,22 @@ async function loadTop10Page() {
         if (recipes.length === 0) return container.innerHTML = '<p>No recipes found.</p>';
 
         recipes.forEach((recipe, index) => {
+            const isMine = recipe.owner_id == currentUserId;
+            const myBadgeHTML = isMine ? `<div class="my-recipe-badge"><span class="material-symbols-outlined" style="font-size: 14px;">person</span>שלי</div>` : '';
+
             const card = document.createElement('div');
             card.className = 'recipe-card';
-            // Keeping the ranking badges here as well, plus showing the view count!
+            card.onclick = () => goToRecipe(recipe.id);
+            card.style.cursor = 'pointer'; // Shows the pointer finger on desktop
             card.innerHTML = `
+                ${myBadgeHTML}
                 <div class="ranking-badge">#${index + 1}</div>
                 <h3>${recipe.title}</h3>
                 <p>קטגוריה: ${recipe.category}</p>
-                <p style="font-size: 0.9em; color: gray;">👀 ${recipe.views || 0} צפיות</p>
-                <button onclick="goToRecipe(${recipe.id})">צפה במתכון המלא</button>
+                <p style="font-size: 0.9em; color: gray; display: flex; align-items: center; gap: 4px;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> 
+                    ${recipe.views || 0} צפיות
+                </p>
             `;
             container.appendChild(card);
         });
@@ -678,8 +750,9 @@ async function loadTop10Page() {
 // Function for the dedicated Recent Recipes Page
 async function loadRecentPage() {
     const container = document.getElementById('recent-page-list');
+    const currentUserId = parseInt(localStorage.getItem('user_id')); 
+    
     try {
-        // Fetch up to 100 recent recipes for the dedicated page
         const response = await fetch(`${API_BASE}/recipes/recent?limit=100`);
         const recipes = await response.json();
         
@@ -687,12 +760,20 @@ async function loadRecentPage() {
         if (recipes.length === 0) return container.innerHTML = '<p>No recipes found.</p>';
 
         recipes.forEach(recipe => {
+            const isMine = recipe.owner_id == currentUserId;
+            const myBadgeHTML = isMine ? `<div class="my-recipe-badge"><span class="material-symbols-outlined" style="font-size: 14px;">person</span>שלי</div>` : '';
+
             const card = document.createElement('div');
             card.className = 'recipe-card';
+            // Make the whole card clickable!
+            card.onclick = () => goToRecipe(recipe.id); 
+            card.style.cursor = 'pointer'; // Shows the pointer finger on desktop
             card.innerHTML = `
-                <h3>${recipe.title}</h3>
-                <p>קטגוריה: ${recipe.category}</p>
-                <button onclick="goToRecipe(${recipe.id})">צפה במתכון המלא</button>
+                ${myBadgeHTML}
+                <div style="padding-right: 5px;">
+                    <h3 style="margin: 0 0 6px 0; font-size: 1.2rem;">${recipe.title}</h3>
+                    <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">קטגוריה: ${recipe.category}</p>
+                </div>
             `;
             container.appendChild(card);
         });
