@@ -16,6 +16,11 @@
     --shadow-color: rgba(41, 47, 54, 0.12); /* Based on Charcoal */
 }
 
+body nav a {
+    font-size: 100px
+
+}
+
 /* =========================================
    Custom Scrollbar (Global)
    ========================================= */
