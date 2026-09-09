@@ -156,7 +156,6 @@ if (scanBtn) {
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
 
-                // ADD THIS LINE HERE:
                 alert("כיווץ הצליח! שולח תמונה קטנה לשרת..."); 
 
                 const ctx = canvas.getContext('2d');

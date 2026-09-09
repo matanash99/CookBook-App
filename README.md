@@ -44,3 +44,35 @@ CookBook-App/
     ├── style.css           # Global styles and media queries
     ├── manifest.json       # PWA configuration
     └── sw.js               # Service Worker for offline caching
+```
+
+## 🚀 Running the Server
+
+**Local Testing**
+
+Use this method when you are actively writing code and want the server to automatically restart when you save changes.
+
+1. **Activate your virtual environment:**
+   ```bash
+   # On Windows
+   venv\Scripts\activate
+
+2. **Start FastAPI server:**
+   ```bash
+   uvicorn backend/main:app -- reload
+#
+**Production Mode**
+
+Use this method to keep the server running silently in the background on your Windows machine, even if the terminal is closed, and make it accessible to the outside world.
+
+1. **Start the API in the background using PM2:**
+   ```bash
+   pm2 start "uvicorn backend/main:app --host 0.0.0.0 --port 8000" --name cookbook-api
+
+2. **Start the secure public tunnel using ngrok:**
+   ```bash
+   pm2 start "ngrok http 8000 --domain=your-custom-link.ngrok-free.app" --name ngrok-tunnel
+
+3. **Save the process list:**
+   ```bash
+   pm2 save
