@@ -37,7 +37,7 @@ body {
     
     background-image: url('assets/bg-pattern.svg');
     background-repeat: repeat;
-    background-size: 250px; /* larger tiles = fewer tiles on screen */
+    background-size: 300px; /* larger tiles = fewer tiles on screen */
     background-attachment: fixed; 
     
     color: var(--text-color);
