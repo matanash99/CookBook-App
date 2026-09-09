@@ -1,0 +1,236 @@
+/* =========================================
+   Virtual Binder Library
+   ========================================= */
+.library-subtitle {
+    text-align: right;
+    color: #666;
+    margin-bottom: 40px;
+    font-size: 1.2rem;
+}
+
+.binder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 40px;
+    padding: 20px 0;
+}
+
+/* The Closed Binder Cover */
+.binder-cover {
+    height: 240px;
+    border-radius: 4px 12px 12px 4px; /* Slightly rounded left, more rounded right */
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.binder-cover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: -8px 12px 20px rgba(0,0,0,0.3);
+}
+
+/* Simulated Metal Ring binding on the right edge */
+.binder-cover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 25px;
+    background: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.4) 30%, rgba(0,0,0,0.4) 100%);
+    border-radius: 0 8px 8px 0;
+}
+
+/* Metal Spirals drawn over the binding edge */
+.binder-cover::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    bottom: 10%;
+    right: 5px;
+    width: 15px;
+    z-index: 2;
+    /* Drawing multiple rings using repeating linear gradients */
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 15px,
+        #b0b0b0 15px,
+        #f5f5f5 17px,
+        #808080 20px,
+        transparent 20px,
+        transparent 30px
+    );
+}
+
+.binder-label {
+    background: #ffffff;
+    color: var(--color-dark);
+    padding: 10px;
+    width: 80%;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 3;
+}
+
+.binder-count {
+    color: white;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    font-weight: bold;
+    z-index: 3;
+    opacity: 0.9;
+}
+
+/* =========================================
+   Open Binder View
+   ========================================= */
+.open-book-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.back-btn {
+    background: transparent;
+    color: var(--color-dark);
+    border: 1px solid var(--color-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+.back-btn:hover { background: var(--color-dark); color: white; }
+
+#open-book-title {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.book-search-container {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 5px 15px;
+    border-radius: 2px;
+}
+.book-search-container input {
+    border: none;
+    outline: none;
+    padding: 8px;
+    margin: 0;
+}
+
+/* The Page and Rings Container */
+.binder-page-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* The Left-Side Metal Rings (Since RTL, they are on the right side of the paper!) */
+.metal-rings-container {
+    width: 40px;
+    background: linear-gradient(to right, #ccc, #eee, #aaa);
+    border-radius: 0 4px 4px 0;
+    box-shadow: inset 2px 0 5px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 5;
+}
+.metal-rings-container::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    bottom: 5%;
+    left: -15px; /* Loops over into the paper */
+    right: 5px;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 30px,
+        #b0b0b0 30px,
+        #f5f5f5 33px,
+        #707070 38px,
+        transparent 38px,
+        transparent 60px
+    );
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
+}
+
+.binder-page {
+    flex-grow: 1;
+    background: #fffdf9; /* Slightly warm paper color */
+    min-height: 70vh;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-radius: 4px 0 0 4px;
+    padding: 40px 60px 40px 40px;
+    position: relative;
+    /* Simulating paper lines */
+    background-image: repeating-linear-gradient(transparent, transparent 31px, #e8e8e8 31px, #e8e8e8 32px);
+    background-attachment: local;
+    line-height: 32px;
+    z-index: 1;
+    overflow: hidden;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.binder-page.turning {
+    transform: translateX(20px) rotateY(-10deg);
+    opacity: 0;
+}
+
+/* Table of Contents Item */
+.toc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    cursor: pointer;
+    padding: 5px 0;
+    border-bottom: 1px dotted #ccc;
+    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    font-weight: bold;
+    color: var(--color-dark);
+}
+.toc-item:hover { color: var(--color-accent); }
+.toc-item .page-num { font-family: var(--font-sans); color: #888; font-size: 0.9rem; font-weight: normal; }
+
+/* The Folded Corner */
+.dog-ear {
+    position: absolute;
+    bottom: 0;
+    left: 0; /* Bottom left */
+    width: 0;
+    height: 0;
+    border-style: solid;
+    /* White corner to "erase" the page, grey flap for the fold */
+    border-width: 0 40px 40px 0;
+    border-color: transparent #e0e0e0 #ffffff transparent;
+    box-shadow: 2px -2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+}
+.dog-ear:hover {
+    border-width: 0 50px 50px 0;
+}

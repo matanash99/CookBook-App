@@ -4,6 +4,7 @@ import { loadHomeRecipes } from './home.js';
 import { loadSingleRecipe, loadEditRecipePage } from './recipe.js';
 import { loadCategoriesPage, loadMyRecipesPage, loadTop10Page, loadRecentPage } from './lists.js';
 import { setupSearch } from './search.js';
+import { initLibrary } from './book.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Authentication Check & Top Nav Setup
@@ -32,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loadEditRecipePage();
     }
     
-    if (document.getElementById('my-recipes-list')) {
-        loadMyRecipesPage();
+    if (document.getElementById('my-recipes-main')) {
+        initLibrary();
     }
     
     if (document.getElementById('top-10-page-list')) {
