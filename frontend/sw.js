@@ -3,7 +3,6 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-    // This simply passes all network requests through normally.
-    // It's the minimum requirement to be an installable PWA!
-    e.respondWith(fetch(e.request));
+    // Force network fetch during development to avoid caching old styles
+    e.respondWith(fetch(e.request, { cache: "no-store" }));
 });

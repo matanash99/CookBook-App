@@ -22,10 +22,33 @@ export async function loadHomeRecipes() {
 
             topList.innerHTML = '';
             if (topRecipes.length > 0) {
-                topSection.style.display = 'block'; 
-                topRecipes.forEach(recipe => {
-                    topList.appendChild(createRecipeCard(recipe, currentUserId));
-                });
+                const heroRecipe = topRecipes[0];
+                const heroSection = document.getElementById('hero-section');
+                
+                if (heroSection) {
+                    heroSection.style.display = 'block';
+                    document.getElementById('hero-title').innerText = heroRecipe.title;
+                    document.getElementById('hero-category').innerText = heroRecipe.category;
+                    
+                    const heroImg = document.getElementById('hero-image');
+                    if (heroRecipe.image_url) {
+                        heroImg.src = heroRecipe.image_url;
+                    } else {
+                        // Fallback image or hide image
+                        heroImg.style.display = 'none';
+                        heroSection.style.background = 'var(--color-dark)';
+                    }
+                    
+                    heroSection.onclick = () => goToRecipe(heroRecipe.id);
+                }
+
+                if (topRecipes.length > 1) {
+                    topSection.style.display = 'block'; 
+                    // Render the rest in the horizontal scroll
+                    topRecipes.slice(1).forEach(recipe => {
+                        topList.appendChild(createRecipeCard(recipe, currentUserId));
+                    });
+                }
             }
 
             listContainer.innerHTML = '';
