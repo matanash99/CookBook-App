@@ -48,20 +48,46 @@ export async function loadCategoriesPage() {
         const response = await fetch(`${API_BASE}/recipes`);
         const recipes = await response.json();
         buttonsContainer.innerHTML = '';
+        
+        const setActive = (clickedBtn) => {
+            Array.from(buttonsContainer.children).forEach(btn => btn.classList.remove('active'));
+            clickedBtn.classList.add('active');
+        };
+
         const uniqueCategories = [...new Set(recipes.map(r => r.category))];
+        
         const allBtn = document.createElement('button');
         allBtn.innerText = 'הכל';
         allBtn.style.width = 'auto';
-        allBtn.onclick = () => renderFilteredRecipes(recipes, 'כל המתכונים', listContainer, titleElement);
+        allBtn.classList.add('active');
+        allBtn.onclick = () => { setActive(allBtn); renderFilteredRecipes(recipes, 'הכל', listContainer, titleElement); };
         buttonsContainer.appendChild(allBtn);
+
+        const top10Btn = document.createElement('button');
+        top10Btn.innerHTML = '🔥 המובילים';
+        top10Btn.style.width = 'auto';
+        top10Btn.style.borderColor = 'var(--color-accent)';
+        top10Btn.onclick = async () => { 
+            setActive(top10Btn); 
+            titleElement.innerText = 'המובילים';
+            listContainer.innerHTML = '<p>טוען...</p>';
+            try {
+                const topRes = await fetch(`${API_BASE}/recipes/top10`);
+                const topRecipes = await topRes.json();
+                renderFilteredRecipes(topRecipes, 'המובילים', listContainer, titleElement);
+            } catch(e) { console.error(e); }
+        };
+        buttonsContainer.appendChild(top10Btn);
+
         uniqueCategories.forEach(category => {
             const btn = document.createElement('button');
             btn.innerText = category;
             btn.style.width = 'auto';
-            btn.onclick = () => renderFilteredRecipes(recipes.filter(r => r.category === category), category, listContainer, titleElement);
+            btn.onclick = () => { setActive(btn); renderFilteredRecipes(recipes.filter(r => r.category === category), category, listContainer, titleElement); };
             buttonsContainer.appendChild(btn);
         });
-        renderFilteredRecipes(recipes, 'כל המתכונים', listContainer, titleElement);
+        
+        renderFilteredRecipes(recipes, 'הכל', listContainer, titleElement);
     } catch (e) { console.error(e); }
 }
 

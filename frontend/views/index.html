@@ -21,7 +21,6 @@
         <!-- Desktop links (hidden on mobile) -->
         <div class="desktop-links">
             <a href="index.html">ראשי</a>
-            <a href="categories.html">קטגוריות</a>
             <a href="upload.html">העלאה</a>
             <a href="my-recipes.html">המתכונים שלי</a>
         </div>
@@ -37,30 +36,22 @@
          MAIN CONTENT
          =============================== -->
     <main>
+        <h1>כל המתכונים</h1>
+        <div class="search-container" style="margin: 20px 0; text-align: right;">
+            <input type="text" id="recipe-search" placeholder="חיפוש לפי שם או קטגוריה..." 
+                style="width: 100%; padding: 14px; font-size: 16px; border: 1px solid var(--color-dark); border-radius: 2px; outline: none; font-family: var(--font-sans);">
+        </div>
+        
+        <div id="category-buttons">
+            <p>טוען קטגוריות...</p>
+        </div>
 
-
-        <!-- TOP 10 SECTION -->
-        <section id="top-10-section" style="display: none; margin-bottom: 40px;">
+        <section>
             <div class="section-header">
-                <h2><a href="top10.html">המתכונים המובילים</a></h2>
+                <h2 id="selected-category-title">הכל</h2>
             </div>
-
-            <div id="top-recipes-list" class="horizontal-scroll-container">
-                <p>טוען מובילים...</p>
-            </div>
+            <div id="filtered-recipes-list" class="recipe-grid"></div>
         </section>
-
-        <!-- RECENT -->
-        <section id="recent-section">
-            <div class="section-header">
-                <h2><a href="recent.html">המתכונים החדשים</a></h2>
-            </div>
-
-            <div id="new-recipes-list" class="recipe-grid">
-                <p>טוען מתכונים...</p>
-            </div>
-        </section>
-
     </main>
 
     <!-- ===============================
@@ -70,11 +61,6 @@
         <a href="index.html" class="nav-item">
             <span class="material-symbols-outlined icon">home</span>
             <span>ראשי</span>
-        </a>
-
-        <a href="categories.html" class="nav-item">
-            <span class="material-symbols-outlined icon">category</span>
-            <span>קטגוריות</span>
         </a>
 
         <a href="upload.html" class="nav-item">

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
 
     if (path.includes('index.html') || path === '/' || path.endsWith('/')) {
-        loadHomeRecipes();
+        loadCategoriesPage();
     }
     
     if (document.getElementById('recipe-detail')) {

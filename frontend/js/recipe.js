@@ -24,7 +24,8 @@ export async function loadSingleRecipe() {
         }
 
         const ingList = document.getElementById('view-ingredients');
-        ingList.innerHTML = recipe.ingredients.map(i => `<li>${i.amount} ${i.item}</li>`).join('');
+        ingList.className = 'checklist';
+        ingList.innerHTML = recipe.ingredients.map(i => `<li><label><input type="checkbox"> <span>${i.amount} ${i.item}</span></label></li>`).join('');
         const instList = document.getElementById('view-instructions');
         instList.innerHTML = recipe.instructions.map(s => `<li>${s}</li>`).join('');
         const actionButtons = document.getElementById('action-buttons');
