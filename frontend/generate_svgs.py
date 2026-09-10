@@ -28,7 +28,6 @@ for cat in categories:
     
     svg_content = f"""<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
     <rect width="600" height="800" fill="{color}" fill-opacity="0.50"/>
-    <text x="300" y="400" font-family="'Frank Ruhl Libre', serif" font-size="48" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">{cat}</text>
 </svg>"""
     
     with open(filepath, 'w', encoding='utf-8') as f:

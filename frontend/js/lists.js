@@ -61,6 +61,12 @@ function renderMagazineGrid() {
         innerBox.style.borderRadius = '2px';
         innerBox.style.pointerEvents = 'none'; // allows clicks to pass through
         card.appendChild(innerBox);
+
+        // Category Card Title in handwritten DanaYad font
+        const title = document.createElement('h3');
+        title.className = 'category-card-title';
+        title.innerText = category;
+        card.appendChild(title);
         
         card.onclick = () => openCategoryView(category);
         
@@ -71,6 +77,7 @@ function renderMagazineGrid() {
 function openCategoryView(category) {
     document.getElementById('magazine-home-view').style.display = 'none';
     document.getElementById('category-view').style.display = 'block';
+    window.scrollTo(0, 0);
     
     const safeCatName = category.replace(/ /g, '-');
     document.getElementById('category-banner').style.backgroundImage = `url('../assets/categories/${safeCatName}.svg')`;
@@ -106,6 +113,7 @@ export async function loadCategoriesPage() {
             document.getElementById('magazine-home-view').style.display = 'block';
             document.getElementById('global-search').value = '';
             renderMagazineGrid();
+            window.scrollTo(0, 0);
         };
 
     } catch (e) {

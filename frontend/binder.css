@@ -26,7 +26,8 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 20px;
+    padding: 16px 22px 16px 14px; /* Optical centering: slight offset accounts for the right-side metal spine */
+    box-sizing: border-box;
 }
 
 .binder-cover:hover {
@@ -39,7 +40,7 @@
     top: 0; left: 0; right: 0; bottom: 0;
     border-radius: 4px 12px 12px 4px;
     box-shadow: -5px 5px 15px rgba(0,0,0,0.2);
-    opacity: 0.8; /* 40% Opacity on the binder itself! */
+    opacity: 0.8; /* Opacity on the binder itself */
     z-index: 1;
     transition: box-shadow 0.3s ease;
 }
@@ -48,14 +49,14 @@
     box-shadow: -8px 12px 20px rgba(0,0,0,0.3);
 }
 
-/* Simulated Metal Ring binding on the right edge */
+/* Simulated Metal Ring binding on the right edge (slimmer, refined profile) */
 .binder-bg::after {
     content: '';
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
-    width: 25px;
+    width: 14px; /* Decreased width from 25px */
     background: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.4) 30%, rgba(0,0,0,0.4) 100%);
     border-radius: 0 8px 8px 0;
 }
@@ -66,42 +67,60 @@
     position: absolute;
     top: 10%;
     bottom: 10%;
-    right: 5px;
-    width: 15px;
+    right: 2.5px;
+    width: 9px; /* Decreased width from 15px */
     z-index: 2;
     background: repeating-linear-gradient(
         to bottom,
         transparent,
-        transparent 15px,
-        #b0b0b0 15px,
-        #f5f5f5 17px,
-        #808080 20px,
-        transparent 20px,
-        transparent 30px
+        transparent 12px,
+        #b0b0b0 12px,
+        #f5f5f5 14px,
+        #707070 16px,
+        transparent 16px,
+        transparent 24px
     );
 }
 
 .binder-label {
-    background: #ffffff;
-    color: var(--color-dark);
-    padding: 10px;
-    width: 80%;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    background: #fbf8ef; /* Warm parchment / antique bookplate paper */
+    color: #2b231d;      /* Classic archival ink */
+    padding: 10px 8px;
+    width: 82%;
+    border: 1px solid #b8a68d;
+    outline: 1px solid #b8a68d;
+    outline-offset: -4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 0 12px rgba(184, 166, 141, 0.25);
     font-family: var(--font-serif);
-    font-weight: 900;
-    font-size: 1.4rem;
+    font-weight: 700;
+    -webkit-text-stroke: 0.5px currentColor;
+    font-size: 1.25rem;
+    line-height: 1.25;
     position: relative;
     z-index: 3;
+    border-radius: 2px;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .binder-count {
-    color: white;
-    font-size: 0.9rem;
-    margin-top: 15px;
-    font-weight: bold;
+    box-sizing: border-box;
+    color: #2b231d;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    -webkit-text-stroke: 0.3px currentColor;
     z-index: 3;
-    opacity: 0.9;
+    background: rgba(251, 248, 239, 0.85);
+    padding: 3px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(184, 166, 141, 0.6);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* =========================================
@@ -222,10 +241,11 @@
     font-size: 1.2rem;
     font-family: var(--font-serif);
     font-weight: bold;
+    -webkit-text-stroke: 0.4px currentColor;
     color: var(--color-dark);
 }
 .toc-item:hover { color: var(--color-accent); }
-.toc-item .page-num { font-family: var(--font-sans); color: #888; font-size: 0.9rem; font-weight: normal; }
+.toc-item .page-num { font-family: var(--font-sans); color: #888; font-size: 0.9rem; font-weight: normal; -webkit-text-stroke: 0; }
 
 /* The Folded Corner */
 .dog-ear {

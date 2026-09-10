@@ -1,6 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@300;400;600;700&display=swap');
 
 /* =========================================
+   Custom Handwritten Font: דנה יד (Dana Yad)
+   ========================================= */
+@font-face {
+    font-family: 'DanaYad';
+    src: url('assets/fonts/DanaYad.eot');
+    src: url('assets/fonts/DanaYad.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/DanaYad.woff2') format('woff2'),
+         url('assets/fonts/DanaYad.woff') format('woff'),
+         url('assets/fonts/DanaYad.otf') format('opentype'),
+         url('assets/fonts/DanaYad.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* =========================================
    General Settings & Color Palette (Editorial)
    ========================================= */
 :root {
@@ -9,8 +25,8 @@
     --color-accent: #c41e3a; /* Crimson */     
     --color-secondary: #f4f4f4;
 
-    --font-serif: 'Frank Ruhl Libre', serif;
-    --font-sans: 'Heebo', sans-serif;
+    --font-serif: 'DanaYad', 'Frank Ruhl Libre', cursive, serif;
+    --font-sans: 'DanaYad', 'Heebo', cursive, sans-serif;
     
     --primary-color: var(--color-dark); 
     --action-color: var(--color-accent);
@@ -29,8 +45,17 @@
 /* =========================================
    Base Layout
    ========================================= */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-sans);
+    font-weight: 600;
+    -webkit-text-stroke: 0.35px currentColor;
+    letter-spacing: 2px;
+    text-rendering: optimizeLegibility;
     margin: 0;
     padding: 0;
     background-color: var(--color-base); 
@@ -56,6 +81,7 @@ main {
 h1, h2, h3, h4, h5, h6, .serif-text {
     font-family: var(--font-serif);
     font-weight: 700;
+    -webkit-text-stroke: 0.55px currentColor;
 }
 
 /* =========================================
@@ -108,18 +134,29 @@ h1, h2, h3, h4, h5, h6, .serif-text {
    Mobile View
    ========================================= */
 @media (max-width: 768px) {
+    body {
+        background-attachment: scroll !important; /* Prevents mobile Safari fixed viewport positioning bugs */
+    }
+
     .desktop-links { display: none !important; }
     .top-nav { justify-content: flex-end !important; }
         
     .mobile-bottom-nav {
         display: flex !important;
-        position: fixed;
-        bottom: 0; left: 0; width: 100%;
-        background-color: rgba(255, 255, 255, 0.98);
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        background-color: rgba(255, 255, 255, 0.98) !important;
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         justify-content: space-around;
-        padding: 12px 0;
-        z-index: 9999;
+        padding: 12px 0 !important;
+        padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+        box-sizing: border-box !important;
+        z-index: 99999 !important;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
     }
 
     main { padding: 10px 15px; margin-top: 10px; }
@@ -151,8 +188,41 @@ h1, h2, h3, h4, h5, h6, .serif-text {
 }
 
 /* =========================================
+   Category Card Titles (Magazine Grid)
+   ========================================= */
+.category-card-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    width: 84%;
+    text-align: center;
+    font-family: 'DanaYad', cursive, serif;
+    font-size: 2.1rem;
+    font-weight: 700;
+    -webkit-text-stroke: 0.55px currentColor;
+    color: var(--color-dark);
+    line-height: 1.15;
+    z-index: 2;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* =========================================
    Navigation Items
    ========================================= */
+.mobile-bottom-nav,
+.mobile-bottom-nav span {
+    font-family: 'Heebo', sans-serif !important;
+    -webkit-text-stroke: 0 !important;
+}
+
+.mobile-bottom-nav .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    letter-spacing: normal !important;
+}
+
 .nav-item {
     display: flex;
     flex-direction: column;
@@ -162,6 +232,8 @@ h1, h2, h3, h4, h5, h6, .serif-text {
     color: var(--primary-color);
     opacity: 0.6; 
     text-decoration: none;
+    font-family: 'Heebo', sans-serif !important;
+    -webkit-text-stroke: 0 !important;
     font-size: 12px;
     font-weight: 600;
     gap: 4px;
@@ -354,7 +426,6 @@ input:focus, textarea:focus, select:focus {
     margin-bottom: 30px;
     text-align: right;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 /* Interactive Checklists */
@@ -547,7 +618,6 @@ main h1 {
 .hero-category {
     font-family: var(--font-sans);
     text-transform: uppercase;
-    letter-spacing: 2px;
     font-size: 0.9rem;
     color: var(--color-accent);
     margin-bottom: 10px;
