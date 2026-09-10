@@ -1,4 +1,5 @@
 import { API_BASE } from './config.js';
+import { RECIPE_CATEGORIES } from './categories.js';
 
 export async function loadSingleRecipe() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -79,8 +80,17 @@ export async function loadEditRecipePage() {
     try {
         const response = await fetch(`${API_BASE}/recipes/${recipeId}`);
         const recipe = await response.json();
+        
+        const categorySelect = document.getElementById('edit-recipe-category');
+        RECIPE_CATEGORIES.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            categorySelect.appendChild(opt);
+        });
+
         document.getElementById('edit-recipe-title').value = recipe.title;
-        document.getElementById('edit-recipe-category').value = recipe.category;
+        categorySelect.value = recipe.category;
         recipe.ingredients.forEach(ing => {
             const row = document.createElement('div');
             row.className = 'ingredient-row';

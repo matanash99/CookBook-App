@@ -1,6 +1,16 @@
 import { API_BASE } from './config.js';
+import { RECIPE_CATEGORIES } from './categories.js';
 
 export function setupUpload() {
+    const categorySelect = document.getElementById('recipe-category');
+    if (categorySelect) {
+        RECIPE_CATEGORIES.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            categorySelect.appendChild(opt);
+        });
+    }
     const scanBtn = document.getElementById('scan-btn');
     const saveBtn = document.getElementById('save-recipe-btn');
     const fileInput = document.getElementById('recipe-image');
@@ -178,7 +188,8 @@ export function setupUpload() {
                     });
                     
                     if (response.ok) {
-                        window.location.href = '/views/index.html';
+                        const newRecipe = await response.json();
+                        window.location.href = `/views/view-recipe.html?id=${newRecipe.id}`;
                     } else {
                         alert('שגיאה בשמירת המתכון.');
                         saveBtn.innerText = 'שמור מתכון';

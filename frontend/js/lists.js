@@ -1,95 +1,133 @@
 import { API_BASE } from './config.js';
 import { createRecipeCard, goToRecipe } from './utils.js';
+import { RECIPE_CATEGORIES } from './categories.js';
 
-function renderFilteredRecipes(recipesToDisplay, categoryName, container, titleElement) {
+let allRecipes = [];
+
+function renderFilteredRecipes(recipesToDisplay, container) {
     const currentUserId = parseInt(localStorage.getItem('user_id'));
-
-    if (titleElement) titleElement.innerText = categoryName;
     container.innerHTML = recipesToDisplay.length === 0 ? '<p>אין מתכונים.</p>' : '';
-    
     recipesToDisplay.forEach(recipe => {
         container.appendChild(createRecipeCard(recipe, currentUserId));
     });
 }
 
+function handleGlobalSearch() {
+    const query = document.getElementById('global-search').value.toLowerCase();
+    const magazineGrid = document.getElementById('magazine-grid');
+    
+    if (query.trim() === '') {
+        magazineGrid.innerHTML = '';
+        renderMagazineGrid();
+        return;
+    }
+    
+    const results = allRecipes.filter(r => r.title.toLowerCase().includes(query) || r.category.toLowerCase().includes(query));
+    magazineGrid.innerHTML = '';
+    renderFilteredRecipes(results, magazineGrid);
+}
+
+function renderMagazineGrid() {
+    const magazineGrid = document.getElementById('magazine-grid');
+    magazineGrid.innerHTML = '';
+    
+    RECIPE_CATEGORIES.forEach(category => {
+        const card = document.createElement('div');
+        card.style.height = '200px';
+        card.style.borderRadius = '4px';
+        card.style.position = 'relative';
+        card.style.cursor = 'pointer';
+        card.style.overflow = 'hidden';
+        card.style.border = '1px solid rgba(0,0,0,0.1)';
+        card.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+        card.style.transition = 'transform 0.2s';
+        
+        card.onmouseenter = () => card.style.transform = 'translateY(-4px)';
+        card.onmouseleave = () => card.style.transform = 'translateY(0)';
+        
+        const safeCatName = category.replace(/ /g, '-');
+        card.style.backgroundImage = `url('../assets/categories/${safeCatName}.svg')`;
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
+        
+        // Inner white lined box
+        const innerBox = document.createElement('div');
+        innerBox.style.position = 'absolute';
+        innerBox.style.top = '12px';
+        innerBox.style.bottom = '12px';
+        innerBox.style.left = '12px';
+        innerBox.style.right = '12px';
+        innerBox.style.border = '2px solid rgba(255, 255, 255, 0.8)';
+        innerBox.style.borderRadius = '2px';
+        innerBox.style.pointerEvents = 'none'; // allows clicks to pass through
+        card.appendChild(innerBox);
+        
+        card.onclick = () => openCategoryView(category);
+        
+        magazineGrid.appendChild(card);
+    });
+}
+
+function openCategoryView(category) {
+    document.getElementById('magazine-home-view').style.display = 'none';
+    document.getElementById('category-view').style.display = 'block';
+    
+    const safeCatName = category.replace(/ /g, '-');
+    document.getElementById('category-banner').style.backgroundImage = `url('../assets/categories/${safeCatName}.svg')`;
+    document.getElementById('selected-category-title').innerText = category;
+    
+    const categoryRecipes = allRecipes.filter(r => r.category === category);
+    const listContainer = document.getElementById('filtered-recipes-list');
+    renderFilteredRecipes(categoryRecipes, listContainer);
+    
+    const scopedSearch = document.getElementById('scoped-search');
+    scopedSearch.value = '';
+    scopedSearch.oninput = (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = categoryRecipes.filter(r => r.title.toLowerCase().includes(query));
+        renderFilteredRecipes(filtered, listContainer);
+    };
+}
+
+export async function loadCategoriesPage() {
+    try {
+        const response = await fetch(`${API_BASE}/recipes`);
+        allRecipes = await response.json();
+        
+        const magazineGrid = document.getElementById('magazine-grid');
+        if (!magazineGrid) return;
+        
+        renderMagazineGrid();
+        
+        document.getElementById('global-search').oninput = handleGlobalSearch;
+        
+        document.getElementById('back-to-magazine').onclick = () => {
+            document.getElementById('category-view').style.display = 'none';
+            document.getElementById('magazine-home-view').style.display = 'block';
+            document.getElementById('global-search').value = '';
+            renderMagazineGrid();
+        };
+
+    } catch (e) {
+        console.error(e);
+        const magazineGrid = document.getElementById('magazine-grid');
+        if (magazineGrid) magazineGrid.innerHTML = '<p>שגיאה בטעינת הנתונים.</p>';
+    }
+}
+
 export async function loadMyRecipesPage() {
-    const buttonsContainer = document.getElementById('my-category-buttons');
     const listContainer = document.getElementById('my-recipes-list');
-    const titleElement = document.getElementById('my-selected-category-title');
     const token = localStorage.getItem('token');
+    if (!listContainer) return;
     try {
         const response = await fetch(`${API_BASE}/users/me/saved-recipes`, { headers: { 'Authorization': `Bearer ${token}` } });
         if (!response.ok) { if (response.status === 401) { localStorage.clear(); window.location.href = '/views/login.html'; } return; }
         const savedRecipes = await response.json();
-        if (savedRecipes.length === 0) { buttonsContainer.innerHTML = ''; listContainer.innerHTML = '<p>אין מתכונים שמורים.</p>'; return; }
-        const uniqueCategories = [...new Set(savedRecipes.map(r => r.category))];
-        buttonsContainer.innerHTML = '';
-        const allBtn = document.createElement('button');
-        allBtn.innerText = 'הכל';
-        allBtn.style.width = 'auto';
-        allBtn.onclick = () => renderFilteredRecipes(savedRecipes, 'הכל', listContainer, titleElement);
-        buttonsContainer.appendChild(allBtn);
-        uniqueCategories.forEach(category => {
-            const btn = document.createElement('button');
-            btn.innerText = category;
-            btn.style.width = 'auto';
-            btn.onclick = () => renderFilteredRecipes(savedRecipes.filter(r => r.category === category), category, listContainer, titleElement);
-            buttonsContainer.appendChild(btn);
-        });
-        renderFilteredRecipes(savedRecipes, 'הכל', listContainer, titleElement);
+        if (savedRecipes.length === 0) { listContainer.innerHTML = '<p>אין מתכונים שמורים.</p>'; return; }
     } catch (e) { console.error(e); }
 }
 
-export async function loadCategoriesPage() {
-    const buttonsContainer = document.getElementById('category-buttons');
-    const listContainer = document.getElementById('filtered-recipes-list');
-    const titleElement = document.getElementById('selected-category-title');
-    try {
-        const response = await fetch(`${API_BASE}/recipes`);
-        const recipes = await response.json();
-        buttonsContainer.innerHTML = '';
-        
-        const setActive = (clickedBtn) => {
-            Array.from(buttonsContainer.children).forEach(btn => btn.classList.remove('active'));
-            clickedBtn.classList.add('active');
-        };
-
-        const uniqueCategories = [...new Set(recipes.map(r => r.category))];
-        
-        const allBtn = document.createElement('button');
-        allBtn.innerText = 'הכל';
-        allBtn.style.width = 'auto';
-        allBtn.classList.add('active');
-        allBtn.onclick = () => { setActive(allBtn); renderFilteredRecipes(recipes, 'הכל', listContainer, titleElement); };
-        buttonsContainer.appendChild(allBtn);
-
-        const top10Btn = document.createElement('button');
-        top10Btn.innerHTML = '🔥 המובילים';
-        top10Btn.style.width = 'auto';
-        top10Btn.style.borderColor = 'var(--color-accent)';
-        top10Btn.onclick = async () => { 
-            setActive(top10Btn); 
-            titleElement.innerText = 'המובילים';
-            listContainer.innerHTML = '<p>טוען...</p>';
-            try {
-                const topRes = await fetch(`${API_BASE}/recipes/top10`);
-                const topRecipes = await topRes.json();
-                renderFilteredRecipes(topRecipes, 'המובילים', listContainer, titleElement);
-            } catch(e) { console.error(e); }
-        };
-        buttonsContainer.appendChild(top10Btn);
-
-        uniqueCategories.forEach(category => {
-            const btn = document.createElement('button');
-            btn.innerText = category;
-            btn.style.width = 'auto';
-            btn.onclick = () => { setActive(btn); renderFilteredRecipes(recipes.filter(r => r.category === category), category, listContainer, titleElement); };
-            buttonsContainer.appendChild(btn);
-        });
-        
-        renderFilteredRecipes(recipes, 'הכל', listContainer, titleElement);
-    } catch (e) { console.error(e); }
-}
+export async function loadHeroSection() {}
 
 export async function loadTop10Page() {
     const container = document.getElementById('top-10-page-list');

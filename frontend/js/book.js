@@ -72,11 +72,22 @@ function renderLibrary() {
         
         const binderDiv = document.createElement('div');
         binderDiv.className = 'binder-cover';
-        binderDiv.style.backgroundColor = color;
-        binderDiv.innerHTML = `
-            <div class="binder-label">${cat}</div>
-            <div class="binder-count">${count} מתכונים</div>
-        `;
+        
+        const binderBg = document.createElement('div');
+        binderBg.className = 'binder-bg';
+        binderBg.style.backgroundColor = color;
+        
+        const label = document.createElement('div');
+        label.className = 'binder-label';
+        label.innerText = cat;
+        
+        const countLabel = document.createElement('div');
+        countLabel.className = 'binder-count';
+        countLabel.innerText = `${count} מתכונים`;
+        
+        binderDiv.appendChild(binderBg);
+        binderDiv.appendChild(label);
+        binderDiv.appendChild(countLabel);
         
         binderDiv.addEventListener('click', () => openBinder(cat));
         shelf.appendChild(binderDiv);

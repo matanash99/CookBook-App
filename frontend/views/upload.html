@@ -64,7 +64,9 @@
             <p>וודא שהפרטים נסרקו כראוי, הוסף שם וקטגוריה, ושמור את המתכון.</p>
             
             <input type="text" id="recipe-title" placeholder="שם המתכון (למשל: עוגת שוקולד)" required>
-            <input type="text" id="recipe-category" placeholder="קטגוריה (למשל: קינוחים)" required>
+            <select id="recipe-category" required>
+                <option value="" disabled selected>בחר קטגוריה...</option>
+            </select>
             
             <div style="margin-top: 20px;">
                 <h3>מצרכים:</h3>
