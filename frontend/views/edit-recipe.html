@@ -36,7 +36,9 @@
         <h2 style="color: var(--primary-color);">עריכת מתכון</h2>
         
         <input type="text" id="edit-recipe-title" placeholder="שם המתכון (למשל: עוגת שוקולד)" required>
-        <input type="text" id="edit-recipe-category" placeholder="קטגוריה (למשל: קינוחים)" required>
+        <select id="edit-recipe-category" required>
+            <option value="" disabled selected>בחר קטגוריה...</option>
+        </select>
         
         <div style="margin-top: 20px;">
             <h3>מצרכים:</h3>
