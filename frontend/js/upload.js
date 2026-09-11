@@ -189,7 +189,7 @@ export function setupUpload() {
                     
                     if (response.ok) {
                         const newRecipe = await response.json();
-                        window.location.href = `/views/view-recipe.html?id=${newRecipe.id}`;
+                        window.location.href = `/views/view-recipe.html?id=${newRecipe.recipe_id}`;
                     } else {
                         alert('שגיאה בשמירת המתכון.');
                         saveBtn.innerText = 'שמור מתכון';
