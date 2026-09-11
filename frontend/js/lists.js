@@ -40,15 +40,45 @@ function renderMagazineGrid() {
         card.style.overflow = 'hidden';
         card.style.border = '1px solid rgba(0,0,0,0.1)';
         card.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-        card.style.transition = 'transform 0.2s';
-        
-        card.onmouseenter = () => card.style.transform = 'translateY(-4px)';
-        card.onmouseleave = () => card.style.transform = 'translateY(0)';
+        card.style.transition = 'box-shadow 0.3s ease';
         
         const safeCatName = category.replace(/ /g, '-');
-        card.style.backgroundImage = `url('../assets/categories/${safeCatName}.svg')`;
-        card.style.backgroundSize = 'cover';
-        card.style.backgroundPosition = 'center';
+        
+        // Bottom layer (Image)
+        const imageLayer = document.createElement('div');
+        imageLayer.style.position = 'absolute';
+        imageLayer.style.top = '0';
+        imageLayer.style.left = '0';
+        imageLayer.style.right = '0';
+        imageLayer.style.bottom = '0';
+        imageLayer.style.backgroundImage = `url('../assets/categories/${safeCatName}.jpeg')`;
+        imageLayer.style.backgroundSize = 'cover';
+        imageLayer.style.backgroundPosition = 'center';
+        imageLayer.style.zIndex = '1';
+        card.appendChild(imageLayer);
+
+        // Top layer (Cover)
+        const coverLayer = document.createElement('div');
+        coverLayer.style.position = 'absolute';
+        coverLayer.style.top = '0';
+        coverLayer.style.left = '0';
+        coverLayer.style.right = '0';
+        coverLayer.style.bottom = '0';
+        coverLayer.style.backgroundImage = `url('../assets/categories/${safeCatName}.svg')`;
+        coverLayer.style.backgroundSize = 'cover';
+        coverLayer.style.backgroundPosition = 'center';
+        coverLayer.style.zIndex = '2';
+        coverLayer.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)'; 
+        coverLayer.style.opacity = '0.9'; // slight transparency so the image gently peaks through even when closed
+        
+        card.onmouseenter = () => {
+            coverLayer.style.transform = 'translateY(-66%)';
+            card.style.boxShadow = '0 8px 15px rgba(0,0,0,0.15)';
+        };
+        card.onmouseleave = () => {
+            coverLayer.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+        };
         
         // Inner white lined box
         const innerBox = document.createElement('div');
@@ -60,13 +90,16 @@ function renderMagazineGrid() {
         innerBox.style.border = '2px solid rgba(255, 255, 255, 0.8)';
         innerBox.style.borderRadius = '2px';
         innerBox.style.pointerEvents = 'none'; // allows clicks to pass through
-        card.appendChild(innerBox);
+        coverLayer.appendChild(innerBox);
 
         // Category Card Title in handwritten DanaYad font
         const title = document.createElement('h3');
         title.className = 'category-card-title';
         title.innerText = category;
-        card.appendChild(title);
+        title.setAttribute('data-title', category);
+        coverLayer.appendChild(title);
+        
+        card.appendChild(coverLayer);
         
         card.onclick = () => openCategoryView(category);
         

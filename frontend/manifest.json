@@ -1,7 +1,7 @@
 {
   "name": "מתכונים",
   "short_name": "מתכונים",
-  "start_url": "/frontend/views/index.html",
+  "start_url": "/views/index.html",
   "display": "standalone",
   "background_color": "#f1f2f6",
   "theme_color": "#2c3e50",
