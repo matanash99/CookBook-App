@@ -27,7 +27,7 @@ def process_recipe_image(image_bytes: bytes) -> dict:
 
     try:
         response = client.models.generate_content(
-            model="gemini-3-flash-preview", # Reverting to the one that gives 20 scans
+            model="gemini-3.5-flash-lite",
             contents=[image_part, prompt],
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",

@@ -70,8 +70,14 @@ export function setupUpload() {
                             const response = await fetch(`${API_BASE}/upload-scan`, { method: 'POST', body: formData });
                             
                             if (!response.ok) {
-                                const errorData = await response.json();
-                                throw new Error(errorData.detail || "שגיאה לא ידועה בסריקה");
+                                let errorData;
+                                try {
+                                    errorData = await response.json();
+                                } catch (e) {
+                                    const text = await response.text();
+                                    throw new Error(text || "שגיאת שרת פנימית (500)");
+                                }
+                                throw new Error(errorData?.detail || "שגיאה לא ידועה בסריקה");
                             }
                             
                             const data = await response.json();
@@ -150,6 +156,82 @@ export function setupUpload() {
                 <button type="button" class="remove-btn" onclick="this.parentElement.remove()">מחק שלב</button>
             `;
             instructionsContainer.appendChild(row);
+        });
+    }
+
+    const appendScanBtn = document.getElementById('append-scan-btn');
+    const appendScanUpload = document.getElementById('append-scan-upload');
+    const appendLoadingMsg = document.getElementById('append-loading-msg');
+
+    if (appendScanBtn && appendScanUpload) {
+        appendScanBtn.addEventListener('click', () => {
+            appendScanUpload.click();
+        });
+
+        appendScanUpload.addEventListener('change', async () => {
+            if (appendScanUpload.files.length === 0) return;
+            const file = appendScanUpload.files[0];
+            
+            appendLoadingMsg.style.display = 'block';
+            appendScanBtn.disabled = true;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = async function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600; 
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    canvas.toBlob(async (blob) => {
+                        const formData = new FormData();
+                        formData.append('file', blob, 'append_recipe.jpg');
+                        
+                        try {
+                            const response = await fetch(`${API_BASE}/upload-scan`, { method: 'POST', body: formData });
+                            if (!response.ok) {
+                                let errorData;
+                                try {
+                                    errorData = await response.json();
+                                } catch (e) {
+                                    const text = await response.text();
+                                    throw new Error(text || "שגיאת שרת פנימית (500)");
+                                }
+                                throw new Error(errorData?.detail || "שגיאה בסריקת ההמשך");
+                            }
+                            const data = await response.json();
+                            
+                            // Append ingredients without clearing
+                            data.ingredients.forEach(ing => addIngredientRow(ing.item, ing.weight_or_quantity));
+                            
+                            // Append instructions without clearing
+                            data.instructions.forEach(inst => {
+                                const row = document.createElement('div');
+                                row.className = 'instruction-row';
+                                row.innerHTML = `
+                                    <textarea class="inst-text" required>${inst}</textarea>
+                                    <button type="button" class="remove-btn" onclick="this.parentElement.remove()">מחק שלב</button>
+                                `;
+                                instructionsContainer.appendChild(row);
+                            });
+
+                        } catch (error) {
+                            alert('שים לב: ' + error.message);
+                        } finally {
+                            appendLoadingMsg.style.display = 'none';
+                            appendScanBtn.disabled = false;
+                            appendScanUpload.value = '';
+                        }
+                    }, 'image/jpeg', 0.5);
+                };
+            };
         });
     }
 
