@@ -116,6 +116,85 @@ export async function loadEditRecipePage() {
         row.innerHTML = `<textarea class="inst-text" required placeholder="שלב..."></textarea><button type="button" class="remove-btn" onclick="this.parentElement.remove()">מחק</button>`;
         instContainer.appendChild(row);
     };
+
+    const appendScanBtn = document.getElementById('edit-append-scan-btn');
+    const appendScanUpload = document.getElementById('edit-append-scan-upload');
+    const appendLoadingMsg = document.getElementById('edit-append-loading-msg');
+
+    if (appendScanBtn && appendScanUpload) {
+        appendScanBtn.addEventListener('click', () => {
+            appendScanUpload.click();
+        });
+
+        appendScanUpload.addEventListener('change', async () => {
+            if (appendScanUpload.files.length === 0) return;
+            const file = appendScanUpload.files[0];
+            
+            appendLoadingMsg.style.display = 'block';
+            appendScanBtn.disabled = true;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = async function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600; 
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    canvas.toBlob(async (blob) => {
+                        const formData = new FormData();
+                        formData.append('file', blob, 'append_recipe.jpg');
+                        
+                        try {
+                            const response = await fetch(`${API_BASE}/upload-scan`, { method: 'POST', body: formData });
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                let errorData;
+                                try {
+                                    errorData = JSON.parse(errorText);
+                                } catch (e) {
+                                    throw new Error(errorText || "שגיאת שרת פנימית (500)");
+                                }
+                                throw new Error(errorData?.detail || "שגיאה בסריקת ההמשך");
+                            }
+                            const data = await response.json();
+                            
+                            // Append ingredients
+                            data.ingredients.forEach(ing => {
+                                const row = document.createElement('div');
+                                row.className = 'ingredient-row';
+                                row.innerHTML = `<input type="text" value="${ing.item}" class="ing-item" required><input type="text" value="${ing.weight_or_quantity}" class="ing-amount" required><button type="button" class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
+                                ingContainer.appendChild(row);
+                            });
+                            
+                            // Append instructions
+                            data.instructions.forEach(step => {
+                                const row = document.createElement('div');
+                                row.className = 'instruction-row';
+                                row.innerHTML = `<textarea class="inst-text" required>${step}</textarea><button type="button" class="remove-btn" onclick="this.parentElement.remove()">מחק שלב</button>`;
+                                instContainer.appendChild(row);
+                            });
+
+                        } catch (error) {
+                            alert('שים לב: ' + error.message);
+                        } finally {
+                            appendLoadingMsg.style.display = 'none';
+                            appendScanBtn.disabled = false;
+                            appendScanUpload.value = '';
+                        }
+                    }, 'image/jpeg', 0.5);
+                };
+            };
+        });
+    }
+
     document.getElementById('update-recipe-btn').onclick = async () => {
         const updateBtn = document.getElementById('update-recipe-btn');
         const title = document.getElementById('edit-recipe-title').value;
