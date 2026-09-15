@@ -70,12 +70,25 @@ function renderLibrary() {
         const color = getColorForCategory(cat);
         const count = binders[cat].length;
         
-        const binderDiv = document.createElement('div');
-        binderDiv.className = 'binder-cover';
+        const bookWrapper = document.createElement('div');
+        bookWrapper.className = 'book-wrapper';
         
-        const binderBg = document.createElement('div');
-        binderBg.className = 'binder-bg';
-        binderBg.style.backgroundColor = color;
+        const bookInner = document.createElement('div');
+        bookInner.className = 'book-inner';
+        bookInner.style.backgroundColor = color;
+        
+        // The Spine
+        const bookSpine = document.createElement('div');
+        bookSpine.className = 'book-spine';
+        
+        const spineText = document.createElement('span');
+        spineText.className = 'spine-text';
+        spineText.innerText = cat;
+        bookSpine.appendChild(spineText);
+        
+        // The Cover
+        const bookCover = document.createElement('div');
+        bookCover.className = 'book-cover';
         
         const label = document.createElement('div');
         label.className = 'binder-label';
@@ -85,12 +98,16 @@ function renderLibrary() {
         countLabel.className = 'binder-count';
         countLabel.innerText = `${count} מתכונים`;
         
-        binderDiv.appendChild(binderBg);
-        binderDiv.appendChild(label);
-        binderDiv.appendChild(countLabel);
+        bookCover.appendChild(label);
+        bookCover.appendChild(countLabel);
         
-        binderDiv.addEventListener('click', () => openBinder(cat));
-        shelf.appendChild(binderDiv);
+        bookInner.appendChild(bookSpine);
+        bookInner.appendChild(bookCover);
+        
+        bookWrapper.appendChild(bookInner);
+        
+        bookWrapper.addEventListener('click', () => openBinder(cat));
+        shelf.appendChild(bookWrapper);
     });
 }
 
