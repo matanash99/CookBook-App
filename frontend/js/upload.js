@@ -70,12 +70,12 @@ export function setupUpload() {
                             const response = await fetch(`${API_BASE}/upload-scan`, { method: 'POST', body: formData });
                             
                             if (!response.ok) {
+                                const errorText = await response.text();
                                 let errorData;
                                 try {
-                                    errorData = await response.json();
+                                    errorData = JSON.parse(errorText);
                                 } catch (e) {
-                                    const text = await response.text();
-                                    throw new Error(text || "שגיאת שרת פנימית (500)");
+                                    throw new Error(errorText || "שגיאת שרת פנימית (500)");
                                 }
                                 throw new Error(errorData?.detail || "שגיאה לא ידועה בסריקה");
                             }
@@ -197,12 +197,12 @@ export function setupUpload() {
                         try {
                             const response = await fetch(`${API_BASE}/upload-scan`, { method: 'POST', body: formData });
                             if (!response.ok) {
+                                const errorText = await response.text();
                                 let errorData;
                                 try {
-                                    errorData = await response.json();
+                                    errorData = JSON.parse(errorText);
                                 } catch (e) {
-                                    const text = await response.text();
-                                    throw new Error(text || "שגיאת שרת פנימית (500)");
+                                    throw new Error(errorText || "שגיאת שרת פנימית (500)");
                                 }
                                 throw new Error(errorData?.detail || "שגיאה בסריקת ההמשך");
                             }
