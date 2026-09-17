@@ -59,7 +59,7 @@ Use this method when you are actively writing code and want the server to automa
 
 2. **Start FastAPI server:**
    ```bash
-   uvicorn backend/main:app -- reload
+   uvicorn backend/main:app --reload --port 8001
 #
 **Production Mode**
 
@@ -67,11 +67,11 @@ Use this method to keep the server running silently in the background on your Wi
 
 1. **Start the API in the background using PM2:**
    ```bash
-   pm2 start "uvicorn backend/main:app --host 0.0.0.0 --port 8000" --name cookbook-api
+   pm2 start "uvicorn backend/main:app --host 0.0.0.0 --port 8001" --name cookbook-api
 
 2. **Start the secure public tunnel using ngrok:**
    ```bash
-   pm2 start "ngrok http 8000 --domain=your-custom-link.ngrok-free.app" --name ngrok-tunnel
+   pm2 start "ngrok http 8001 --domain=your-custom-link.ngrok-free.app" --name ngrok-tunnel
 
 3. **Save the process list:**
    ```bash

@@ -3,3 +3,7 @@ uvicorn
 sqlalchemy
 python-multipart
 google-genai
+PyJWT
+passlib
+bcrypt==3.2.2
+python-dotenv

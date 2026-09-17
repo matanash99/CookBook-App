@@ -4,5 +4,5 @@ In backend-
 source venv/Scripts/activate
 - expected: to see (venv) in terminal
 
-uvicorn main:app --reload --host 0.0.0.0
-- expected: http://localhost:8000/login.html
+uvicorn main:app --reload --host 0.0.0.0 --port 8001
+- expected: http://localhost:8001/login.html
