@@ -67,6 +67,17 @@ class RecipeCreate(BaseModel):
     instructions: List[str]
     image_url: Optional[str] = None
 
+class RecipeListResponse(BaseModel):
+    id: int
+    title: str
+    category: str
+    owner_id: int
+    image_url: Optional[str] = None
+    views: Optional[int] = 0
+
+    class Config:
+        from_attributes = True
+
 @app.post("/api/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.username == user.username).first()
@@ -137,17 +148,17 @@ def create_recipe(recipe: RecipeCreate, db: Session = Depends(get_db), current_u
     db.commit()
     return {"message": "Recipe saved successfully!", "recipe_id": db_recipe.id}
 
-@app.get("/api/recipes")
+@app.get("/api/recipes", response_model=List[RecipeListResponse])
 def get_recipes(db: Session = Depends(get_db)):
     return db.query(Recipe).all()
 
 # 1. Get Top 10 Recipes (Sorted by views)
-@app.get("/api/recipes/top10")
+@app.get("/api/recipes/top10", response_model=List[RecipeListResponse])
 def get_top_10_recipes(db: Session = Depends(get_db)):
     return db.query(Recipe).order_by(desc(Recipe.views)).limit(10).all()
 
 # 2. Get Recent Recipes (Sorted by newest first)
-@app.get("/api/recipes/recent")
+@app.get("/api/recipes/recent", response_model=List[RecipeListResponse])
 def get_recent_recipes(limit: int = 10, db: Session = Depends(get_db)):
     # You can pass limit=100 later for the dedicated page!
     return db.query(Recipe).order_by(desc(Recipe.created_at)).limit(limit).all()
