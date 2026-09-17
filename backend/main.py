@@ -265,6 +265,19 @@ def increment_recipe_view(recipe_id: int, db: Session = Depends(get_db)):
 
 from fastapi.responses import RedirectResponse
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class CacheControlMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # Apply 30-day cache to assets (images, fonts, etc.)
+        if request.url.path.startswith("/assets/"):
+            response.headers["Cache-Control"] = "public, max-age=2592000, immutable"
+        return response
+
+app.add_middleware(CacheControlMiddleware)
+
 # --- SERVE FRONTEND ---
 # 1. Get the directory where main.py lives (the backend folder)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
