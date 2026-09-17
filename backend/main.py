@@ -72,7 +72,6 @@ class RecipeListResponse(BaseModel):
     title: str
     category: str
     owner_id: int
-    image_url: Optional[str] = None
     views: Optional[int] = 0
 
     class Config:
