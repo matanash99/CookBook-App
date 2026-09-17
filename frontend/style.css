@@ -7,7 +7,6 @@
     font-family: 'DanaYad';
     src: url('assets/fonts/DanaYad.eot');
     src: url('assets/fonts/DanaYad.eot?#iefix') format('embedded-opentype'),
-         url('assets/fonts/DanaYad.woff2') format('woff2'),
          url('assets/fonts/DanaYad.woff') format('woff'),
          url('assets/fonts/DanaYad.otf') format('opentype'),
          url('assets/fonts/DanaYad.ttf') format('truetype');

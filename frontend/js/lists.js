@@ -44,17 +44,23 @@ function renderMagazineGrid() {
         
         const safeCatName = category.replace(/ /g, '-');
         
-        // Bottom layer (Image)
-        const imageLayer = document.createElement('div');
+        // Bottom layer (Image) - using <img> for native lazy loading
+        const imageLayer = document.createElement('img');
+        imageLayer.src = `../assets/categories/${safeCatName}.jpeg`;
+        imageLayer.loading = 'lazy'; // crucial for performance
         imageLayer.style.position = 'absolute';
         imageLayer.style.top = '0';
         imageLayer.style.left = '0';
-        imageLayer.style.right = '0';
-        imageLayer.style.bottom = '0';
-        imageLayer.style.backgroundImage = `url('../assets/categories/${safeCatName}.jpeg')`;
-        imageLayer.style.backgroundSize = 'cover';
-        imageLayer.style.backgroundPosition = 'center';
+        imageLayer.style.width = '100%';
+        imageLayer.style.height = '100%';
+        imageLayer.style.objectFit = 'cover';
         imageLayer.style.zIndex = '1';
+        
+        // Handle error gracefully if image doesn't exist yet
+        imageLayer.onerror = () => {
+            imageLayer.src = '../assets/favicon.png'; // Fallback
+            imageLayer.style.objectFit = 'contain';
+        };
         card.appendChild(imageLayer);
 
         // Top layer (Cover)
