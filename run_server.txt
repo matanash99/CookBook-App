@@ -1,6 +1,7 @@
 cd backend
 
 In backend-
+python -m venv venv
 source venv/Scripts/activate
 - expected: to see (venv) in terminal
 

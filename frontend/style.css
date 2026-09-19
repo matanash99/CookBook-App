@@ -66,8 +66,21 @@ body {
     
     color: var(--text-color);
     padding-bottom: 70px;
+
+    /* Prevent text selection while scrolling on touchscreens */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
+/* Allow text selection where it matters */
+input, textarea, #recipe-detail {
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+}
 
 main {
     max-width: 900px;
